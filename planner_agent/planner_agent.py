@@ -1,11 +1,13 @@
 from agency_swarm import Agent
 import os
 from agents import ModelSettings
+from agents.extensions.models.litellm_model import LitellmModel
+from openai.types.shared import Reasoning
 
 # Get the absolute path to the current file's directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-def create_planner_agent(model: str = "gpt-5", reasoning_effort: str = "high") -> Agent:
+def create_planner_agent(model: str = "openai/gpt-5", reasoning_effort: str = "high") -> Agent:
     """Factory that returns a fresh PlannerAgent instance.
     Use this in tests to avoid reusing a singleton across multiple agencies.
     """
@@ -18,11 +20,9 @@ def create_planner_agent(model: str = "gpt-5", reasoning_effort: str = "high") -
         ),
         instructions="hello this is a test",
         tools_folder=os.path.join(current_dir, "tools"),
-        model=model,
+        model=LitellmModel(model=model),
         model_settings=ModelSettings(
-            reasoning={
-                "effort": reasoning_effort,
-            }
+            reasoning=Reasoning(effort=reasoning_effort) if "o3" in model else None
         )
     )
 

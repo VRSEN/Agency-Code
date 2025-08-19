@@ -1,17 +1,16 @@
 from agency_swarm import Agent
 import os
 from agents import WebSearchTool, ModelSettings
-from openai import AsyncOpenAI
-from agents import set_tracing_disabled, set_default_openai_api, set_default_openai_client
+from agents import set_tracing_disabled
 from openai.types.shared.reasoning import Reasoning
+from agents.extensions.models.litellm_model import LitellmModel
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Get the absolute path to the current file's directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# BASE_URL = "http://localhost:4000"
-# client = AsyncOpenAI(base_url=BASE_URL, api_key="any-key")
 set_tracing_disabled(disabled=True)
-set_default_openai_api("chat_completions")
 
 
 def create_agency_code_agent(model: str = "gpt-5", reasoning_effort: str = "high") -> Agent:
@@ -21,11 +20,6 @@ def create_agency_code_agent(model: str = "gpt-5", reasoning_effort: str = "high
     is_openai = "gpt" in model
     is_claude = "claude" in model
     is_grok = "grok" in model
-
-    if not is_openai:
-        BASE_URL = "http://localhost:4000"
-        client = AsyncOpenAI(base_url=BASE_URL, api_key="any-key")
-        set_default_openai_client(client)
 
     return Agent(
         name="AgencyCodeAgent",
@@ -37,8 +31,7 @@ def create_agency_code_agent(model: str = "gpt-5", reasoning_effort: str = "high
         # instructions are in shared_instructions.md for agency
         instructions=None,
         tools_folder=os.path.join(current_dir, "tools"),
-        model=model,
-        openai_client=client if not is_openai else None,
+        model=model if is_openai else LitellmModel(model=model),
         # only works with openai models
         tools=[WebSearchTool()] if is_openai else [],
         model_settings=ModelSettings(

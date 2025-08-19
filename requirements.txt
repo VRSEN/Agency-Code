@@ -1,4 +1,4 @@
-git+https://github.com/bonk1t/agency-swarm.git@dev/migrate-to-responses-api-agents-sdk
+git+https://github.com/bonk1t/agency-swarm.git@artemii/3rd-party-models-streaming-fix
 pydantic>=2.0.0
 requests>=2.25.0
 subprocess32; python_version < '3'
@@ -10,3 +10,6 @@ markdown>=3.3.0
 html2text>=2020.1.16
 pytest>=6.0.0
 pytest-asyncio>=0.21.0
+openai-agents[litellm]
+openai==1.95.1
+# litellm[proxy]
